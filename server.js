@@ -18,6 +18,9 @@ const typeDefs = gql`
 	}
 `;
 
+// GET /api/v1/tweets
+// GET /api/v1/tweet/:id
+
 const server = new ApolloServer({ typeDefs });
 
 server.listen().then(({ url }) => {
@@ -25,60 +28,11 @@ server.listen().then(({ url }) => {
 });
 
 /*
-    GraphQL api is a collection ot lots of types
-        We have to explain the types of the data in the server to GraphQL server BEFORE EVEN THE SERVER STARTS
-        A GraphQL schema provides a root type for each kind of operation
-        GraphQL = "Graph Query Language"
-        Schema Definition Language
-            There is one language to query data and the same language is using to explain the GraphQL the shape of the data
 
-        Query root type must be provided.
-            Whatever you put in the query type, those things are what the users will be able to request
-        
-            SUPER IMPORTANT to create Query type!!!
+    Putting inside Query is like creating GET Request( GET /api/v1/tweet/:id) in REST api to be ask for a request by a user
 
-
-        ex) SWAPI 
-            schema {
-            query: Root
-            }
-
-            type Root {
-                allFilms(after: String, first: Int, before: String, last: Int): FilmsConnection
-                film(id: ID, filmID: ID): Film
-                allPeople(after: String, first: Int, before: String, last: Int): PeopleConnection
-                person(id: ID, personID: ID): Person
-                allPlanets(after: String, first: Int, before: String, last: Int): PlanetsConnection
-                planet(id: ID, planetID: ID): Planet
-                allSpecies(after: String, first: Int, before: String, last: Int): SpeciesConnection
-                species(id: ID, speciesID: ID): Species
-                allStarships(after: String, first: Int, before: String, last: Int): StarshipsConnection
-                starship(id: ID, starshipID: ID): Starship
-                allVehicles(after: String, first: Int, before: String, last: Int): VehiclesConnection
-                vehicle(id: ID, vehicleID: ID): Vehicle
-
-                """Fetches an object given its ID"""
-                node(
-                    """The ID of an object"""
-                    id: ID!
-                ): Node
-            }
-                
-
-    {
-        "data": {
-            "text": null,
-            "hello": null
-        }
-    }
-    1. Why there is no error?
-    2. Why is it null, and who set it as null? And how can I change it?
-
-    Scalar type
-        String
-        Int
-        Boolean
-        ID
-
-    Query's argument
+    type Query {
+		allTweets: [Tweet]
+		tweet(id: ID): Tweet // receiving an argument
+	}
 */
