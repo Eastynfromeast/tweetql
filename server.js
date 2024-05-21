@@ -2,9 +2,19 @@ import { ApolloServer, gql } from "apollo-server";
 import { text } from "stream/consumers";
 
 const typeDefs = gql`
-	type Query {
+	type User {
+		id: ID
+		username: String
+	}
+	type Tweet {
+		id: ID
 		text: String
-		hello: String
+		author: User
+	}
+
+	type Query {
+		allTweets: [Tweet]
+		tweet(id: ID): Tweet
 	}
 `;
 
@@ -32,7 +42,7 @@ server.listen().then(({ url }) => {
             schema {
             query: Root
             }
-            
+
             type Root {
                 allFilms(after: String, first: Int, before: String, last: Int): FilmsConnection
                 film(id: ID, filmID: ID): Film
@@ -52,6 +62,23 @@ server.listen().then(({ url }) => {
                     """The ID of an object"""
                     id: ID!
                 ): Node
-                }
+            }
                 
+
+    {
+        "data": {
+            "text": null,
+            "hello": null
+        }
+    }
+    1. Why there is no error?
+    2. Why is it null, and who set it as null? And how can I change it?
+
+    Scalar type
+        String
+        Int
+        Boolean
+        ID
+
+    Query's argument
 */
