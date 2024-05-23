@@ -1,10 +1,11 @@
 import { ApolloServer, gql } from "apollo-server";
-import { text } from "stream/consumers";
 
 const typeDefs = gql`
 	type User {
-		id: ID
-		username: String
+		id: ID!
+		username: String!
+		firstName: String!
+		lastName: String!
 	}
 	type Tweet {
 		id: ID!
@@ -14,7 +15,7 @@ const typeDefs = gql`
 
 	type Query {
 		allTweets: [Tweet!]!
-		tweet(id: ID!): Tweet!
+		tweet(id: ID!): Tweet
 	}
 	type Mutation {
 		postTweet(text: String!, userId: ID!): Tweet!
@@ -65,4 +66,14 @@ server.listen().then(({ url }) => {
         text
         }
     }
+
+    ! mark means REQUIRED
+        tell GraphQL what is required or not
+        ex.
+            tweet(id: ID): Tweet <- This "Tweet" is "Nullable field"
+        
+        All fields are nullable by default
+        
+        "message": "Cannot return null for non-nullable field Query.tweet.",
+
 */
