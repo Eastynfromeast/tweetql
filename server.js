@@ -76,4 +76,10 @@ server.listen().then(({ url }) => {
         
         "message": "Cannot return null for non-nullable field Query.tweet.",
 
+    # Recap
+        Query is the most basic type, the most required type of GraphQL
+        Whatever you put inside the query, that will be what your user can request from you
+
+        [typeName!] === list of typeName
+        empty is not null, it's just empty!
 */
