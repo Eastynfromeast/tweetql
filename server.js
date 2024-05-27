@@ -1,5 +1,16 @@
 import { ApolloServer, gql } from "apollo-server";
 
+const tweets = [
+	{
+		id: "1",
+		text: "first one",
+	},
+	{
+		id: "2",
+		text: "second one",
+	},
+];
+
 const typeDefs = gql`
 	type User {
 		id: ID!
@@ -10,7 +21,7 @@ const typeDefs = gql`
 	type Tweet {
 		id: ID!
 		text: String!
-		author: User!
+		author: User
 	}
 
 	type Query {
@@ -27,59 +38,34 @@ const typeDefs = gql`
 // POST /api/v1/tweets
 // GET /api/v1/tweet/:id
 
-const server = new ApolloServer({ typeDefs });
+const resolvers = {
+	Query: {
+		allTweets() {
+			return tweets;
+		},
+		tweet(root, { id }) {
+			return tweets.find(tweet => tweet.id === id);
+		},
+	},
+};
+
+const server = new ApolloServer({ typeDefs, resolvers });
 
 server.listen().then(({ url }) => {
 	console.log(`Running on ${url}`);
 });
 
 /*
+    GraphQL schema definition language
+        any GraphQL server will understand it
+        BUT depending on what programming language you are using the next step will be diffrent
+        The logic will be the same which is called "Resolvers"
 
-    Putting inside Query is like creating GET Request( GET /api/v1/tweet/:id) in REST api to be ask for a request by a user
+    type Query has a field called "allTweets",
+    and we are going to write resolvers for the allTweets field
 
-    type Query {
-		allTweets: [Tweet]
-		tweet(id: ID): Tweet // receiving an argument
-	}
+    When Apollo server call your resolver function, Apollo server gives root argument and arguments the function needs to your function!
 
-    type Mutation == POST request of REST api
-        things are mutataed in the backend such as database
-        the data user sends to the database and mutate the data
-        POST, DELETE, PUT is all Mutation
-
-    This is query by default
-    and if you want to mutate this, you need to write mutation 
-    {
-        allTweets {
-        text
-        }
-        tweet(id: "1") {
-        author {
-            username
-        }
-        text
-        }
-    }
-
-    mutation{
-        postTweet(text:"Hello,first tweet!", userId:"1") {
-        text
-        }
-    }
-
-    ! mark means REQUIRED
-        tell GraphQL what is required or not
-        ex.
-            tweet(id: ID): Tweet <- This "Tweet" is "Nullable field"
-        
-        All fields are nullable by default
-        
-        "message": "Cannot return null for non-nullable field Query.tweet.",
-
-    # Recap
-        Query is the most basic type, the most required type of GraphQL
-        Whatever you put inside the query, that will be what your user can request from you
-
-        [typeName!] === list of typeName
-        empty is not null, it's just empty!
+    When user sends arguments, those arguments always be SECOND arguments, ALWAYS
+    Root argument will be ALWAYS FIRST
 */
