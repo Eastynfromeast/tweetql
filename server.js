@@ -1,6 +1,6 @@
 import { ApolloServer, gql } from "apollo-server";
 
-const tweets = [
+let tweets = [
 	{
 		id: "1",
 		text: "first one",
@@ -47,6 +47,22 @@ const resolvers = {
 			return tweets.find(tweet => tweet.id === id);
 		},
 	},
+	Mutation: {
+		postTweet(_, { text, userId }) {
+			const newTweet = {
+				id: tweets.length + 1,
+				text,
+			};
+			tweets.push(newTweet);
+			return newTweet;
+		},
+		deleteTweet(_, { id }) {
+			const tweet = tweets.find(tweet => tweet.id === id);
+			if (!tweet) return false;
+			tweets = tweets.filter(tweet => tweet.id !== id);
+			return true;
+		},
+	},
 };
 
 const server = new ApolloServer({ typeDefs, resolvers });
@@ -56,16 +72,56 @@ server.listen().then(({ url }) => {
 });
 
 /*
-    GraphQL schema definition language
-        any GraphQL server will understand it
-        BUT depending on what programming language you are using the next step will be diffrent
-        The logic will be the same which is called "Resolvers"
+    How to get query - the basic
+        {
+            allTweets{
+                id
+                text
+            }
+        }
 
-    type Query has a field called "allTweets",
-    and we are going to write resolvers for the allTweets field
+    Mutation Resolver
+        How to mutate - the basic
+        Mutation: {
+            postTweet(_, { text, userId }) {
+                const newTweet = {
+                    id: tweets.length + 1,
+                    text,
+                };
+                tweets.push(newTweet);
+                return newTweet;
+            },
+        },
+        ex)
+            mutation {
+                postTweet(text:"I am NEW!", userId:"1"){
+                    id
+                    text
+                }
+            }
 
-    When Apollo server call your resolver function, Apollo server gives root argument and arguments the function needs to your function!
+        Question?
+            mutation 을 실험하기 위해 postTweet을 따라서 작성하고
+            userId를 변경해서 postTweet을 작성했는데 기존 3번째 트윗이 사라지고 변경된 텍스트가 3번째 "업데이트" 됨
+            why?!!!
+            Answer is the database is only in-memory!
+                현재 서버에서 저장되는 데이터베이스는 서버가 다시 실행되면 해당 코드 상단의 임의로 정의해준 const tweets 만 불러올 것
+                ==> 우리가 실제 서버에 업데이트 하는 값이 아니기때문에 새로고침해서 날라갔다!
+            {
+                "data": {
+                    "allTweets": [
+                    //...
+                    {
+                        "id": "3", // userId를 "2"로 변경
+                        "text": "I am the fourth"
+                    },
+                    {
+                        "id": "4", // userId "1"
+                        "text": "I am the fourth"
+                    }
+                    ]
+                }
+            }
 
-    When user sends arguments, those arguments always be SECOND arguments, ALWAYS
-    Root argument will be ALWAYS FIRST
+    The division betweent query resolver and mutation resolver is conceptual, just to organize our code better
 */
