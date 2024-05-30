@@ -11,12 +11,26 @@ let tweets = [
 	},
 ];
 
+let users = [
+	{
+		id: "1",
+		firstName: "nuri",
+		lastName: "nu",
+	},
+	{
+		id: "2",
+		firstName: "nuna",
+		lastName: "nu",
+	},
+];
+
 const typeDefs = gql`
 	type User {
 		id: ID!
 		username: String!
 		firstName: String!
 		lastName: String!
+		fullName: String!
 	}
 	type Tweet {
 		id: ID!
@@ -25,6 +39,7 @@ const typeDefs = gql`
 	}
 
 	type Query {
+		allUsers: [User!]!
 		allTweets: [Tweet!]!
 		tweet(id: ID!): Tweet
 	}
@@ -46,6 +61,10 @@ const resolvers = {
 		tweet(root, { id }) {
 			return tweets.find(tweet => tweet.id === id);
 		},
+		allUsers() {
+			console.log("all users called");
+			return users;
+		},
 	},
 	Mutation: {
 		postTweet(_, { text, userId }) {
@@ -63,6 +82,11 @@ const resolvers = {
 			return true;
 		},
 	},
+	User: {
+		fullName({ firstName, lastName }) {
+			return `${firstName} ${lastName}`;
+		},
+	},
 };
 
 const server = new ApolloServer({ typeDefs, resolvers });
@@ -72,56 +96,5 @@ server.listen().then(({ url }) => {
 });
 
 /*
-    How to get query - the basic
-        {
-            allTweets{
-                id
-                text
-            }
-        }
-
-    Mutation Resolver
-        How to mutate - the basic
-        Mutation: {
-            postTweet(_, { text, userId }) {
-                const newTweet = {
-                    id: tweets.length + 1,
-                    text,
-                };
-                tweets.push(newTweet);
-                return newTweet;
-            },
-        },
-        ex)
-            mutation {
-                postTweet(text:"I am NEW!", userId:"1"){
-                    id
-                    text
-                }
-            }
-
-        Question?
-            mutation 을 실험하기 위해 postTweet을 따라서 작성하고
-            userId를 변경해서 postTweet을 작성했는데 기존 3번째 트윗이 사라지고 변경된 텍스트가 3번째 "업데이트" 됨
-            why?!!!
-            Answer is the database is only in-memory!
-                현재 서버에서 저장되는 데이터베이스는 서버가 다시 실행되면 해당 코드 상단의 임의로 정의해준 const tweets 만 불러올 것
-                ==> 우리가 실제 서버에 업데이트 하는 값이 아니기때문에 새로고침해서 날라갔다!
-            {
-                "data": {
-                    "allTweets": [
-                    //...
-                    {
-                        "id": "3", // userId를 "2"로 변경
-                        "text": "I am the fourth"
-                    },
-                    {
-                        "id": "4", // userId "1"
-                        "text": "I am the fourth"
-                    }
-                    ]
-                }
-            }
-
-    The division betweent query resolver and mutation resolver is conceptual, just to organize our code better
+    # How we can create resolver function in any fields
 */
