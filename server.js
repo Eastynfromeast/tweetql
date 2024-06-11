@@ -31,8 +31,14 @@ const typeDefs = gql`
 		id: ID!
 		firstName: String!
 		lastName: String!
+		"""
+		Is the sum of firstName+lastName
+		"""
 		fullName: String!
 	}
+	"""
+	Tweet object represents a resource for a Tweet
+	"""
 	type Tweet {
 		id: ID!
 		text: String!
@@ -40,12 +46,27 @@ const typeDefs = gql`
 	}
 
 	type Query {
+		"""
+		Bring all users
+		"""
 		allUsers: [User!]!
+		"""
+		Brings all Tweets
+		"""
 		allTweets: [Tweet!]!
+		"""
+		Bring a Tweet and required a Tweet ID
+		"""
 		tweet(id: ID!): Tweet
 	}
 	type Mutation {
+		"""
+		Posts a Tweet which is requiring text and userId
+		"""
 		postTweet(text: String!, userId: ID!): Tweet!
+		"""
+		Deletes a Tweet if found, else returns false
+		"""
 		deleteTweet(id: ID!): Boolean!
 	}
 `;
@@ -103,5 +124,7 @@ server.listen().then(({ url }) => {
 });
 
 /*
-    # How we can create resolver function in any fields
+	# Documentation
+		How to write a documentation of schema in GraphQL?
+			just write a text inside """ (3 double quotation marks) """ and locate the text above the field
 */
