@@ -58,6 +58,7 @@ const typeDefs = gql`
 		Bring a Tweet and required a Tweet ID
 		"""
 		tweet(id: ID!): Tweet
+		allMovies: [Movie!]!
 	}
 	type Mutation {
 		"""
@@ -68,6 +69,30 @@ const typeDefs = gql`
 		Deletes a Tweet if found, else returns false
 		"""
 		deleteTweet(id: ID!): Boolean!
+	}
+	type Movie {
+		id: Int!
+		url: String!
+		imdb_code: String!
+		title: String!
+		title_english: String!
+		title_long: String!
+		slug: String!
+		year: Int!
+		rating: Float!
+		runtime: Float!
+		genres: [String]!
+		summary: String!
+		description_full: String!
+		synopsis: String!
+		yt_trailer_code: String!
+		language: String!
+		mpa_rating: String!
+		background_image: String!
+		background_image_original: String!
+		small_cover_image: String!
+		medium_cover_image: String!
+		large_cover_image: String!
 	}
 `;
 
@@ -86,6 +111,11 @@ const resolvers = {
 		allUsers() {
 			console.log("all users called");
 			return users;
+		},
+		allMovies() {
+			return fetch("https://yts.mx/api/v2/list_movies.json")
+				.then(r => r.json())
+				.then(json => json.data.movies);
 		},
 	},
 	Mutation: {
@@ -127,4 +157,11 @@ server.listen().then(({ url }) => {
 	# Documentation
 		How to write a documentation of schema in GraphQL?
 			just write a text inside """ (3 double quotation marks) """ and locate the text above the field
+	
+	# Migrating from REST to GraphQL
+		=> Describe types of the fileds to GraphQL schema
+		GraphQL allows you to choose where your data come from
+
+		Object.key(movie)
+
 */
